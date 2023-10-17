@@ -1,0 +1,24 @@
+#include <stdio.h> 
+int main() {
+}
+
+The above is the standard template for a c program.
+include imports a studio "library" or header file 
+int main dictates the beginning of the program.
+
+%d is a format specifier for an integer
+
+e.g. 
+int a = 10
+str b = "Hello"
+printf("%d + %s", a , b) prints "10 + Hello"
+
+GNU C Compiler:
+
+gcc first.c -o first // Compiles the script called "first"
+
+./first // To run the executable
+
+touch helloworld.sh // Creates a shell script
+
+chmod u+x helloworld.sh // Gives the permission to be executable
