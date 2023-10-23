@@ -1,0 +1,13 @@
+To compile:
+
+gcc -c utils.c # will produce utils.o 
+
+gcc -c create_file_h.c # will produce create_file_h.o 
+
+gcc create_file_h.o utils.o -o create_file_h
+
+1. Compile the implementation file with flag –c
+
+2. Compile the main file with flag –c
+
+3. Generate the executable by combining the object files (extension .o)
