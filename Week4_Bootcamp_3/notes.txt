@@ -1,0 +1,2 @@
+create array of structs to hold all rows of csv
+records loops is the juice
