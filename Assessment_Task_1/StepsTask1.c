@@ -11,6 +11,10 @@ typedef struct {
 
 // Define any additional variables here
 
+char date[11]; // Empty character array
+char time[6]; // Empty character array
+char steps[10];  // Large enough to hold a typical step count as a string
+
 FILE *open_file(char filename[], char mode[]) {
     FILE *file = fopen(filename, mode);
     if (file == NULL) {
@@ -59,42 +63,39 @@ int main() {
 
     // Calls a function to read the fitness data
     FILE *file = open_file("FitnessData_2023.csv", "r");
-
+    // Initialises a line count variable
     int totalLines = 0;
     // Size of container for the line you are reading
     int buffer_size = 100;
     // Stores line into containers of buffer size
     char line_buffer[buffer_size];
 
+    FITNESS_DATA allData[59];
+
     // While lines have some text, print each line
     while (fgets(line_buffer, buffer_size, file) != NULL) {
         // Counts the number of lines in the csv file, and thus the required array size
         totalLines += 1;
+        char date[11]; // Empty character array
+        char time[6]; // Empty character array
+        char steps[10];  // Large enough to hold a typical step count as a string
+        
+        // record input identifies which string in the array, and the "," is (where it should be split) the delimiter
+        // Outputs useful date time and steps data
+        tokeniseRecord(line_buffer, ",", date, time, steps);
+        strcpy(allData[totalLines - 1].date, date);
+        strcpy(allData[totalLines - 1].time, time);
+        allData[totalLines - 1].steps = atoi(steps);
+
     }
+    
+    fclose(file);
 
     printf("Number of records in file: %d\n", totalLines);
 
-    fclose(file);
-
-    // Defines an array of 3 length, of the struct type (needs to define array of size: total csv)
-    FITNESS_DATA allData[3];
-
-    // need three arrays of split data which can then be put into allData as needed
-    char *date[] = {"DATE1", "DATE2", "DATE3"};
-    char *time[] = {"time1", "time2", "time3"};
-    unsigned steps[] = {1, 2, 3};
-
-    // Loops through all the above variables, and appends the empty allData array with the corresponding elements from the above
-    for (int i = 0; i < 3; i++) {
-        strcpy(allData[i].date, date[i]);
-        strcpy(allData[i].time, time[i]);
-        allData[i].steps = steps[i];
-    }
-
-    // Prints the first three lines of allData as required
-    printf("First Three Lines\n");
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++){
         printf("%s/%s/%d\n", allData[i].date, allData[i].time, allData[i].steps);
     }
+    
 
 }
