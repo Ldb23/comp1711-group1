@@ -11,9 +11,10 @@ typedef struct {
 
 // Define any additional variables here
 
-char date[11]; // Empty character array
-char time[6]; // Empty character array
-char steps[10];  // Large enough to hold a typical step count as a string
+char date[11]; // Initialises an empty character array
+char time[6]; // Initialises an empty character array
+char steps[10];  // Initialises a large enough char array to hold a typical step count as a string
+int totalLines = 0; // Initialises a line count variable
 
 FILE *open_file(char filename[], char mode[]) {
     FILE *file = fopen(filename, mode);
@@ -23,12 +24,6 @@ FILE *open_file(char filename[], char mode[]) {
     }
     return file;
 }
-// Read in CSV File
-// Store it in the correct size array
-// Use typedef data structure
-// Write the number of records in the file to the screen
-// Write to the screen the first three rows of the file
-
 
 // This is your helper function. Do not change it in any way.
 // Inputs: character array representing a row; the delimiter character
@@ -63,10 +58,10 @@ int main() {
 
     // Calls a function to read the fitness data
     FILE *file = open_file("FitnessData_2023.csv", "r");
-    // Initialises a line count variable
-    int totalLines = 0;
+
     // Size of container for the line you are reading
     int buffer_size = 100;
+    
     // Stores line into containers of buffer size
     char line_buffer[buffer_size];
 
@@ -74,25 +69,26 @@ int main() {
 
     // While lines have some text, print each line
     while (fgets(line_buffer, buffer_size, file) != NULL) {
+
         // Counts the number of lines in the csv file, and thus the required array size
         totalLines += 1;
-        char date[11]; // Empty character array
-        char time[6]; // Empty character array
-        char steps[10];  // Large enough to hold a typical step count as a string
         
-        // record input identifies which string in the array, and the "," is (where it should be split) the delimiter
-        // Outputs useful date time and steps data
+        // Splits the input (current line being read) by the , to output assignments to date, time and steps variables
         tokeniseRecord(line_buffer, ",", date, time, steps);
-        strcpy(allData[totalLines - 1].date, date);
-        strcpy(allData[totalLines - 1].time, time);
-        allData[totalLines - 1].steps = atoi(steps);
+
+        
+        strcpy(allData[totalLines - 1].date, date); // Assigns the date in the current line, to the date in the allData struct at the current element
+        strcpy(allData[totalLines - 1].time, time); // Assigns the time in the current line, to the time in the allData struct at the current element
+        allData[totalLines - 1].steps = atoi(steps); // Assigns the converted integer equiv of steps in the current line, to the steps in the allData struct at the current element
 
     }
     
     fclose(file);
 
+    // Prints the total number of records in file, in the specified format
     printf("Number of records in file: %d\n", totalLines);
 
+    // Prints the first three lines of the file in the specified format of date/time/steps
     for (int i = 0; i < 3; i++){
         printf("%s/%s/%d\n", allData[i].date, allData[i].time, allData[i].steps);
     }
