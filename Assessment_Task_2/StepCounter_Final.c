@@ -11,7 +11,14 @@ char choice;
 char line[buffer_size];
 char filename[buffer_size];
 int lineCount = 0;
-
+#define MAX_RECORDS 1000
+FITNESS_DATA allData[MAX_RECORDS];
+int currentLine = 0;
+char date[11];
+char time[6];
+char steps[10];
+char associatedDate[11];
+char associatedTime[6];
 // This is your helper function. Do not change it in any way.
 // Inputs: character array representing a row; the delimiter character
 // Ouputs: date character array; time character array; steps character array
@@ -57,18 +64,13 @@ int main() {
         printf("Q: Quit\n");
         printf("Enter choice: ");
 
-        // get the next character typed in and store in the 'choice'
         choice = getchar();
 
-        // this gets rid of the newline character which the user will enter
-        // as otherwise this will stay in the stdin and be read next time
         while (getchar() != '\n');
 
-
-        // switch statement to control the menu.
         switch (choice)
         {
-        // this allows for either capital or lower case
+
         case 'A':
         case 'a':
             printf("Input filename: ");
@@ -76,44 +78,113 @@ int main() {
             sscanf(line, " %s ", filename);
 
             FILE *input = fopen(filename, "r");
+            currentLine = 0;
             if (!input)
             {
                 printf("Error: Could not find or open the file.\n");
                 return 1;
             } else {
+                while (fgets(line, buffer_size, input) != NULL) {
+
+                    // Keeps track of current line being read in the while loop
+                    currentLine += 1;
+                    lineCount += 1;
+                    tokeniseRecord(line, ",", date, time, steps);
+                    strcpy(allData[currentLine - 1].date, date); 
+                    strcpy(allData[currentLine - 1].time, time); 
+                    allData[currentLine - 1].steps = atoi(steps);
+                }
                 printf("File successfully loaded.\n");
             }
             break;
 
+
         case 'B':
         case 'b':
             if (input) {
-                // While lines have some text, increment the lineCount
-                while (fgets(line, buffer_size, input) != NULL) {
-                    lineCount += 1;
-                }
                 printf("Total records: %d\n", lineCount);
             }else{
                 printf("Error: File not open\n");
             };
             break;
 
+
         case 'C':
         case 'c':
+            {int minSteps = 20000;
+            for (int i = 0; i < lineCount; i++){
+                if (allData[i].steps < minSteps) {
+                    minSteps = allData[i].steps;
+                    strcpy(associatedDate, allData[i].date);
+                    strcpy(associatedTime, allData[i].time);
+                }
+            }
+            printf("Fewest steps: %s %s\n", associatedDate, associatedTime);
+            }
             break;
+
+
         case 'D':
         case 'd':
+            {int maxSteps = 0;
+            for (int i = 0; i < lineCount; i++){
+                if (allData[i].steps > maxSteps) {
+                    maxSteps = allData[i].steps;
+                    strcpy(associatedDate, allData[i].date);
+                    strcpy(associatedTime, allData[i].time);
+                }
+            }
+            printf("Largest steps: %s %s\n", associatedDate, associatedTime);
+            }
             break;
+
+
         case 'E':
         case 'e':
+            {int totalSteps = 0;
+            int meanSteps = 0;
+            for (int i = 0; i < lineCount; i++){
+                totalSteps += allData[i].steps;}
+            meanSteps = totalSteps / lineCount;
+            printf("Mean step count: %d\n", meanSteps);
+            }
             break;
+
+
         case 'F':
         case 'f':
+            {
+                int periodLength = 0;
+                int periodStart = -1;
+                int longestPeriodLength = 0;
+                int longestPeriodStart = 0;
+
+                for (int i = 0; i < lineCount; i++){
+                    if (allData[i].steps > 500) {
+                        if (periodStart == -1) {
+                            periodStart = i;}
+                        periodLength += 1;
+                        if (periodLength > longestPeriodLength) {
+                            longestPeriodLength = periodLength;
+                            longestPeriodStart = periodStart;
+                            }
+                    } else {
+                        periodStart = -1; 
+                        periodLength = 0;
+                    }
+                }
+                printf("Longest period start: %s %s\n", allData[longestPeriodStart].date, allData[longestPeriodStart].time);
+                printf("Longest period end: %s %s\n", allData[longestPeriodStart + longestPeriodLength - 1].date, allData[longestPeriodStart + longestPeriodLength - 1].time);
+            }
             break;
+
+
         case 'Q':
         case 'q':
             return 0;
             break;
+
+
         // if they type anything else:
         default:
             printf("Invalid choice. Try again.\n");
